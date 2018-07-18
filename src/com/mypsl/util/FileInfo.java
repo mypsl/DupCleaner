@@ -1,3 +1,4 @@
+package com.mypsl.util;
 
 public class FileInfo implements Comparable<FileInfo> {
 	
