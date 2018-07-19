@@ -1,4 +1,4 @@
-java -jar DupCleaner.jar "/tmp"  > dupfiles.log
+java -jar DupCleaner.jar -u "E:\mypsl\Camera"  > dupfiles.log
 
 echo "duplicated files all dumped to .log"
 # pause

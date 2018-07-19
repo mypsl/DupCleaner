@@ -57,20 +57,28 @@ public class FileInfo implements Comparable<FileInfo> {
         if (!(o instanceof FileInfo)) return false;
 
         FileInfo f = (FileInfo) o;
-        if (size != f.size) return false;
-        if (modifyTime != f.modifyTime) return false;
+        // 相同长度的同名文件，需要重复出现在hashset队列中
+        if (size.equals(f.size)) {
+        	return false;
+        }
+        
+//        if (modifyTime != f.modifyTime) return false;
         // 相同路径不会出现同名文件
 //        return url != null ? url.equals(f.url) : f.url == null;
+        
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = 0;
-        result = 31 * result + (url != null ? url.hashCode() : 0);
-        result = (int) (31 * result + size);
-        result = (int) (31 * result + modifyTime);
-        return result;
+//        int result = 0;
+//        result = 31 * result + (url != null ? url.hashCode() : 0);
+//        result = (int) (31 * result + size);
+//        result = (int) (31 * result + modifyTime);
+//        return result;
+    	
+    	// 相同hashcode调用equals方法比较相同
+    	return 1;
     }
 
 	public int compareTo(FileInfo info) {

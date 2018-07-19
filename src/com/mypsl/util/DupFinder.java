@@ -24,7 +24,7 @@ public class DupFinder
 	public void loadFilesInfo(String dirPath) {
 		File dir = new File(dirPath);
 		if (!dir.exists() || !dir.isDirectory()) {
-			System.out.println(dirPath + "is not a directory!");
+			System.out.println(dirPath + "is not a directory either file !");
 			return ;
 		}
 	
@@ -57,35 +57,39 @@ public class DupFinder
 	public void dumpDuplicateFilesSort() {
 		for (Entry<String, ArrayList<FileInfo>> entry : filesInfo.entrySet()) {
 			List<FileInfo> infos = (ArrayList<FileInfo>) entry.getValue();
-			if (infos.size() < 2) continue;	// 忽略2条一下同名文件清单
+			if (infos.size() < 2) continue;	// 忽略2条以下同名文件清单，增強處理效率
 
 			List<FileInfo> uniInfos = new ArrayList<>();
 			if (uniMode) {
+				// 长度不同的同名文件认为不重复，需要去重
 				// 使用hashset去重复，set为重复的集合，可以通过new ArrayList(set)转换成list
 				HashSet<FileInfo> set = new HashSet<>();
 				for (FileInfo info : infos) {
-					// HashSet中的add方法会返回一个Boolean值，如果插入的值已经存在，则直接返回false
+					// HashSet中的add方法会返回一个Boolean值，如果插入的对象已经存在，则插入失败返回false
+					// 判断存在的依据是，先用hashCode方法循环比较HashSet中所有对象，若hash值相同则返回true，需要继续使用equals方法比较
+					// 若hash值不同则返回false，可直接插入
+					// 使用equals方法比较返回true则对象相同，插入失败
 					boolean add = set.add(info);
-					if (!add) {
+					if (add) {
 						uniInfos.add(info);
 					}
 				}
 			} else {
 				uniInfos.addAll(infos);
 			}
+			
+			if (uniInfos.size() < 2) continue; // 去重后，忽略2条以下清单
 			// 按最后修改时间排序
 			Collections.sort(uniInfos);
+			// 最后修改文件去掉删除标志
+			((FileInfo) uniInfos.get(uniInfos.size() - 1)).setKillFlag(FileInfo.KEEP_FLAG);
 
-			if (uniInfos.size() > 1) {
-				// 最后修改文件去掉删除标志
-				((FileInfo) uniInfos.get(uniInfos.size() - 1)).setKillFlag(FileInfo.KEEP_FLAG);
-
-				for (int i = 0; i < uniInfos.size(); i++) {
-					FileInfo f = (FileInfo) uniInfos.get(i);
-					System.out.println(f.getKillFlag() + f.getUrl() + " # " + "文件大小：" + f.getSize() / 1024 + "Kb"
-							+ " # " + "文件最后修改时间：" + new Date(f.getModifyTime()));
-				}
+			for (int i = 0; i < uniInfos.size(); i++) {
+				FileInfo f = (FileInfo) uniInfos.get(i);
+				System.out.println(f.getKillFlag() + f.getUrl() + " # " + "文件大小：" + f.getSize() / 1024 + "Kb" + " # "
+						+ "文件最后修改时间：" + new Date(f.getModifyTime()));
 			}
+			
 			System.out.println();
 		}
 	}
