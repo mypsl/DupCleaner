@@ -29,6 +29,10 @@ public class DupFinder
 		}
 	
 		File files[] = dir.listFiles();
+		if (files == null) {
+			System.out.println("cannot open directory:"+ dirPath + " is empty or Permission denied!");
+			return;
+		}
 		for (int i=0; i < files.length; i++) {
 			File tempFile = files[i];
 			if (tempFile.isDirectory()) {
