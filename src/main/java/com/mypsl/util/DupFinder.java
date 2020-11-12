@@ -1,8 +1,5 @@
 package com.mypsl.util;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -14,14 +11,42 @@ import java.util.Map.Entry;
 
 public class DupFinder
 {
-	public boolean uniMode = false;
-	public String dirPath;
+	private boolean uniMode = false;
+	private String dirPath;
 	public Map<String,ArrayList<FileInfo>> filesInfo = new HashMap<String,ArrayList<FileInfo>>();
-	public DupFinder()	{
+
+	public DupFinder() {
 	}
 
+	public DupFinder(boolean uniMode, String dirPath)	{
+		this.uniMode = uniMode;
+		this.dirPath = dirPath;
+	}
+
+	public boolean isUniMode() {
+		return uniMode;
+	}
+
+	public void setUniMode(boolean uniMode) {
+		this.uniMode = uniMode;
+	}
+
+	public String getDirPath() {
+		return dirPath;
+	}
+
+	public void setDirPath(String dirPath) {
+		this.dirPath = dirPath;
+	}
+
+	public void scanDirPath() throws IOException {
+		if (dirPath.isEmpty()) {
+			dirPath = new File(".").getCanonicalPath();
+		}
+		loadFilesInfo(dirPath);
+	}
 	// 将路径下文件信息载人Map
-	public void loadFilesInfo(String dirPath) {
+	private void loadFilesInfo(String dirPath) {
 		File dir = new File(dirPath);
 		if (!dir.exists() || !dir.isDirectory()) {
 			System.out.println(dirPath + "is not a directory either file !");
@@ -59,9 +84,10 @@ public class DupFinder
 	
 	// 打印同名重复文件清单
 	public void dumpDuplicateFilesSort() {
+		System.out.println("files counts:" + filesInfo.size());
 		for (Entry<String, ArrayList<FileInfo>> entry : filesInfo.entrySet()) {
 			List<FileInfo> infos = (ArrayList<FileInfo>) entry.getValue();
-			if (infos.size() < 2) continue;	// 忽略2条以下同名文件清单，增強處理效率
+//			if (infos.size() < 2) continue;	// 忽略2条以下同名文件清单，增強處理效率
 
 			List<FileInfo> uniInfos = new ArrayList<>();
 			if (uniMode) {
